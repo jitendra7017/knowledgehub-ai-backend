@@ -1,0 +1,41 @@
+post:
+  tags:
+    - Documents
+
+  summary: Re-index Document
+
+  description: |
+    Queue a document for re-processing.
+
+    This performs:
+
+    - PDF parsing
+    - Chunk generation
+    - Embedding generation
+    - Pinecone indexing
+
+  operationId: reindexDocument
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/UUID"
+
+  responses:
+
+    "202":
+
+      description: Re-index job queued successfully.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            $ref: "../../schemas/common.yaml#/CommonResponse"
+
+    "404":
+      $ref: "../../components/responses.yaml#/NotFound"

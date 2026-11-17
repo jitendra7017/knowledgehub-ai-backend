@@ -1,0 +1,62 @@
+post:
+  tags:
+    - Documents
+
+  summary: Upload Document
+
+  description: |
+    Upload a supported document.
+
+    Supported formats:
+
+    - PDF
+    - TXT
+    - Markdown
+
+    The document is queued for asynchronous processing.
+
+  operationId: uploadDocument
+
+  security:
+    - BearerAuth: []
+
+  requestBody:
+
+    $ref: "../../components/requestBodies.yaml#/UploadDocument"
+
+  responses:
+
+    "202":
+
+      description: Document upload accepted.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            allOf:
+
+              - $ref: "../../schemas/common.yaml#/CommonResponse"
+
+              - type: object
+
+                properties:
+
+                  data:
+
+                    $ref: "../../schemas/document.yaml#/Document"
+
+    "400":
+
+      description: Invalid file
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"
+
+    "403":
+      $ref: "../../components/responses.yaml#/Forbidden"
+
+    "422":
+      $ref: "../../components/responses.yaml#/ValidationError"

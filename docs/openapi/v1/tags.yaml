@@ -1,0 +1,71 @@
+Authentication:
+  name: Authentication
+  description: |
+    Authentication and authorization APIs.
+
+    These endpoints are responsible for:
+
+    - User Login
+    - Token Refresh
+    - Logout
+    - Current User Profile
+
+Documents:
+  name: Documents
+  description: |
+    Document Management APIs.
+
+    Features include:
+
+    - Upload Documents
+    - List Documents
+    - Get Document Details
+    - Delete Documents
+    - View Document Chunks
+    - Re-index Documents
+
+AI:
+  name: AI
+  description: |
+    Retrieval-Augmented Generation (RAG) APIs.
+
+    Features include:
+
+    - Ask Questions
+    - Semantic Search
+    - Conversation History
+    - Suggested Questions
+
+Users:
+  name: Users
+  description: |
+    User Management APIs.
+
+    Available only for administrators.
+
+    Features include:
+
+    - List Users
+    - Create Users
+    - Update Users
+    - Delete Users
+    - Assign Roles
+
+Health:
+  name: Health
+  description: |
+    Health & Monitoring APIs.
+
+    Used by:
+
+    - Kubernetes
+    - Docker
+    - Load Balancers
+    - Monitoring Systems
+
+    Provides:
+
+    - Liveness
+    - Readiness
+    - Dependency Checks
+    - Service Status

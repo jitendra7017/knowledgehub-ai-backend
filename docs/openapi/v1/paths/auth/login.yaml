@@ -1,0 +1,44 @@
+post:
+  tags:
+    - Authentication
+
+  summary: Login
+
+  description: |
+    Authenticate a user using email and password.
+
+    Returns:
+
+    - JWT Access Token
+    - Refresh Token
+    - Logged-in User
+
+  operationId: login
+
+  security: []
+
+  requestBody:
+    $ref: "../../components/requestBodies.yaml#/Login"
+
+  responses:
+
+    "200":
+      description: Login successful
+
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/auth.yaml#/LoginResponse"
+
+          examples:
+            success:
+              $ref: "../../components/examples.yaml#/LoginSuccess"
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"
+
+    "422":
+      $ref: "../../components/responses.yaml#/ValidationError"
+
+    "500":
+      $ref: "../../components/responses.yaml#/InternalServerError"

@@ -1,0 +1,39 @@
+get:
+  tags:
+    - Authentication
+
+  summary: Get Current User
+
+  description: Returns the authenticated user's profile.
+
+  operationId: getCurrentUser
+
+  security:
+    - BearerAuth: []
+
+  responses:
+
+    "200":
+
+      description: User profile
+
+      content:
+
+        application/json:
+
+          schema:
+
+            allOf:
+
+              - $ref: "../../schemas/common.yaml#/CommonResponse"
+
+              - type: object
+
+                properties:
+
+                  data:
+
+                    $ref: "../../schemas/user.yaml#/User"
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"

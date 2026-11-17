@@ -1,0 +1,115 @@
+get:
+  tags:
+    - Documents
+
+  summary: Get Document
+
+  description: Retrieve a document by UUID.
+
+  operationId: getDocument
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/UUID"
+
+  responses:
+
+    "200":
+
+      description: Document details.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            allOf:
+
+              - $ref: "../../schemas/common.yaml#/CommonResponse"
+
+              - type: object
+
+                properties:
+
+                  data:
+
+                    $ref: "../../schemas/document.yaml#/Document"
+
+    "404":
+      $ref: "../../components/responses.yaml#/NotFound"
+
+delete:
+  tags:
+    - Documents
+
+  summary: Delete Document
+
+  description: Delete a document and schedule cleanup of chunks and vectors.
+
+  operationId: deleteDocument
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/UUID"
+
+  responses:
+
+    "202":
+
+      description: Deletion queued successfully.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            $ref: "../../schemas/common.yaml#/CommonResponse"
+
+patch:
+  tags:
+    - Documents
+
+  summary: Update Document
+
+  description: Update editable document metadata.
+
+  operationId: updateDocument
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/UUID"
+
+  requestBody:
+
+    required: true
+
+    content:
+
+      application/json:
+
+        schema:
+
+          type: object
+
+          properties:
+
+            title:
+
+              type: string
+
+  responses:
+
+    "200":
+
+      description: Document updated successfully.

@@ -1,0 +1,86 @@
+CommonResponse:
+  type: object
+
+  required:
+    - success
+    - message
+    - data
+
+  properties:
+
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Request processed successfully.
+
+    data:
+      nullable: true
+
+ErrorResponse:
+  type: object
+
+  required:
+    - success
+    - message
+
+  properties:
+
+    success:
+      type: boolean
+      example: false
+
+    message:
+      type: string
+      example: Validation failed.
+
+    errors:
+      type: array
+
+      items:
+        type: string
+
+Pagination:
+  type: object
+
+  properties:
+
+    page:
+      type: integer
+      example: 1
+
+    limit:
+      type: integer
+      example: 10
+
+    total:
+      type: integer
+      example: 145
+
+    pages:
+      type: integer
+      example: 15
+
+AuditFields:
+  type: object
+
+  properties:
+
+    uuid:
+      type: string
+      format: uuid
+
+    createdAt:
+      type: string
+      format: date-time
+
+    updatedAt:
+      type: string
+      format: date-time
+
+    deletedAt:
+      type: string
+      nullable: true
+      format: date-time

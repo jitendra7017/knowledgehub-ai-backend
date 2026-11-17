@@ -1,0 +1,61 @@
+post:
+  tags:
+    - AI
+
+  summary: Ask AI
+
+  description: |
+    Ask a question against the uploaded knowledge base.
+
+    Workflow:
+
+    1. Generate question embedding
+    2. Search Pinecone
+    3. Retrieve relevant chunks
+    4. Build RAG prompt
+    5. Generate AI response
+    6. Save query history
+
+  operationId: askQuestion
+
+  security:
+    - BearerAuth: []
+
+  requestBody:
+    $ref: "../../components/requestBodies.yaml#/AskQuestion"
+
+  responses:
+
+    "200":
+
+      description: AI response generated successfully.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            $ref: "../../schemas/query.yaml#/AskQuestionResponse"
+
+          examples:
+
+            success:
+
+              $ref: "../../components/examples.yaml#/AskQuestion"
+
+    "400":
+
+      description: Invalid request.
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"
+
+    "403":
+      $ref: "../../components/responses.yaml#/Forbidden"
+
+    "422":
+      $ref: "../../components/responses.yaml#/ValidationError"
+
+    "500":
+      $ref: "../../components/responses.yaml#/InternalServerError"

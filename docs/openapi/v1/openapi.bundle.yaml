@@ -1,0 +1,1166 @@
+openapi: 3.1.0
+info:
+  title: KnowledgeHub AI API
+  version: 1.0.0
+  summary: Enterprise RAG Platform API
+  description: |
+    KnowledgeHub AI is an enterprise Retrieval-Augmented Generation (RAG)
+    platform that enables organizations to upload documents,
+    process them into vector embeddings, perform semantic search,
+    and interact with them using AI-powered conversations.
+
+    ## Features
+
+    - JWT Authentication
+    - Role Based Access Control (RBAC)
+    - Document Upload & Processing
+    - PDF Parsing
+    - Semantic Search
+    - OpenAI Integration
+    - Pinecone Vector Database
+    - Background Jobs (BullMQ)
+    - Audit Logs
+    - Health Monitoring
+  contact:
+    name: TechuLabs LLP
+    email: support@techulabs.com
+    url: https://techulabs.com
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local Development
+security:
+  - BearerAuth: []
+tags:
+  - name: Authentication
+    description: Authentication APIs
+  - name: Documents
+    description: Document Management APIs
+  - name: AI
+    description: AI & RAG APIs
+  - name: Health
+    description: Health Check APIs
+  - name: Users
+    description: User Management APIs
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: |
+        Authenticate a user using email and password.
+
+        Returns:
+
+        - JWT Access Token
+        - Refresh Token
+        - Logged-in User
+      operationId: login
+      security: []
+      requestBody:
+        $ref: '#/components/requestBodies/Login'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                success:
+                  $ref: '#/components/examples/LoginSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /auth/refresh-token:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh Access Token
+      description: Generate a new access token using a refresh token.
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout
+      description: Logout the current authenticated user.
+      operationId: logout
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponse'
+              example:
+                success: true
+                message: Logged out successfully.
+                data: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get Current User
+      description: Returns the authenticated user's profile.
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /documents:
+    get:
+      tags:
+        - Authentication
+      summary: Get Current User
+      description: Returns the authenticated user's profile.
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /documents/upload:
+    post:
+      tags:
+        - Documents
+      summary: Upload Document
+      description: |
+        Upload a supported document.
+
+        Supported formats:
+
+        - PDF
+        - TXT
+        - Markdown
+
+        The document is queued for asynchronous processing.
+      operationId: uploadDocument
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/UploadDocument'
+      responses:
+        '202':
+          description: Document upload accepted.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid file
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /documents/{uuid}:
+    get:
+      tags:
+        - Documents
+      summary: Get Document
+      description: Retrieve a document by UUID.
+      operationId: getDocument
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UUID'
+      responses:
+        '200':
+          description: Document details.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Document'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Documents
+      summary: Delete Document
+      description: Delete a document and schedule cleanup of chunks and vectors.
+      operationId: deleteDocument
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UUID'
+      responses:
+        '202':
+          description: Deletion queued successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponse'
+    patch:
+      tags:
+        - Documents
+      summary: Update Document
+      description: Update editable document metadata.
+      operationId: updateDocument
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UUID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        '200':
+          description: Document updated successfully.
+  /documents/{uuid}/chunks:
+    get:
+      tags:
+        - Documents
+      summary: List Document Chunks
+      description: Returns all chunks generated for a document.
+      operationId: listDocumentChunks
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UUID'
+      responses:
+        '200':
+          description: Chunks retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DocumentChunk'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /documents/{uuid}/reindex:
+    post:
+      tags:
+        - Documents
+      summary: Re-index Document
+      description: |
+        Queue a document for re-processing.
+
+        This performs:
+
+        - PDF parsing
+        - Chunk generation
+        - Embedding generation
+        - Pinecone indexing
+      operationId: reindexDocument
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UUID'
+      responses:
+        '202':
+          description: Re-index job queued successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /ai/ask:
+    post:
+      tags:
+        - AI
+      summary: Ask AI
+      description: |
+        Ask a question against the uploaded knowledge base.
+
+        Workflow:
+
+        1. Generate question embedding
+        2. Search Pinecone
+        3. Retrieve relevant chunks
+        4. Build RAG prompt
+        5. Generate AI response
+        6. Save query history
+      operationId: askQuestion
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AskQuestion'
+      responses:
+        '200':
+          description: AI response generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AskQuestionResponse'
+              examples:
+                success:
+                  $ref: '#/components/examples/AskQuestion'
+        '400':
+          description: Invalid request.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ai/history:
+    get:
+      tags:
+        - AI
+      summary: Conversation History
+      description: |
+        Returns previously asked questions and generated answers
+        for the authenticated user.
+      operationId: conversationHistory
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Conversation history.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/QueryLog'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /ai/suggestions:
+    get:
+      tags:
+        - AI
+      summary: Suggested Questions
+      description: |
+        Returns AI-generated suggested questions
+        based on the uploaded documents.
+      operationId: suggestedQuestions
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Suggested questions.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+              example:
+                success: true
+                message: Success
+                data:
+                  - Explain the leave policy.
+                  - What are the reimbursement rules?
+                  - Summarize the onboarding process.
+                  - What are the working hours?
+                  - What is the travel policy?
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health Check
+      description: |
+        Basic health endpoint.
+
+        Returns the overall application status.
+      operationId: health
+      security: []
+      responses:
+        '200':
+          description: Application is healthy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /health/live:
+    get:
+      tags:
+        - Health
+      summary: Liveness Probe
+      description: |
+        Used by Kubernetes or Docker
+        to determine whether the application
+        process is alive.
+      operationId: live
+      security: []
+      responses:
+        '200':
+          description: Application is alive.
+          content:
+            application/json:
+              example:
+                success: true
+                message: Application is alive.
+                data:
+                  status: UP
+  /health/ready:
+    get:
+      tags:
+        - Health
+      summary: Readiness Probe
+      description: |
+        Determines whether the application
+        is ready to receive traffic.
+
+        Checks:
+
+        - Database
+        - Redis
+        - OpenAI
+        - Pinecone
+      operationId: readiness
+      security: []
+      responses:
+        '200':
+          description: Application is ready.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Service unavailable.
+  /health/details:
+    get:
+      tags:
+        - Health
+      summary: Detailed Health Report
+      description: |
+        Returns detailed runtime information.
+
+        Includes:
+
+        - Memory Usage
+        - Uptime
+        - Redis Status
+        - Database Status
+        - OpenAI Status
+        - Pinecone Status
+      operationId: healthDetails
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Detailed application health.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /users:
+    get:
+      tags:
+        - Users
+      summary: List Users
+      description: |
+        Returns a paginated list of users.
+      operationId: listUsers
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Search'
+      responses:
+        '200':
+          description: Users retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/User'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+        - Users
+      summary: Create User
+      operationId: createUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - email
+                - password
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          description: User created successfully.
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /users/{uuid}:
+    get:
+      tags:
+        - Users
+      summary: Get User
+      operationId: getUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UUID'
+      responses:
+        '200':
+          description: User retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CommonResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+    patch:
+      tags:
+        - Users
+      summary: Update User
+      operationId: updateUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UUID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: User updated successfully.
+    delete:
+      tags:
+        - Users
+      summary: Delete User
+      operationId: deleteUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UUID'
+      responses:
+        '204':
+          description: User deleted successfully.
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer Authentication
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@knowledgehub.ai
+        password:
+          type: string
+          format: password
+          example: Admin@123
+    CommonResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Request processed successfully.
+        data:
+          nullable: true
+    AuditFields:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          nullable: true
+          format: date-time
+    Permission:
+      allOf:
+        - $ref: '#/components/schemas/AuditFields'
+        - type: object
+          properties:
+            module:
+              type: string
+              example: documents
+            action:
+              type: string
+              example: upload
+            code:
+              type: string
+              example: documents.upload
+            description:
+              type: string
+    Role:
+      allOf:
+        - $ref: '#/components/schemas/AuditFields'
+        - type: object
+          properties:
+            name:
+              type: string
+            code:
+              type: string
+            description:
+              type: string
+            permissions:
+              type: array
+              items:
+                $ref: '#/components/schemas/Permission'
+    User:
+      allOf:
+        - $ref: '#/components/schemas/AuditFields'
+        - type: object
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            email:
+              type: string
+              format: email
+            phone:
+              type: string
+            avatar:
+              type: string
+              nullable: true
+            isActive:
+              type: boolean
+            roles:
+              type: array
+              items:
+                $ref: '#/components/schemas/Role'
+    LoginData:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          example: 3600
+        user:
+          $ref: '#/components/schemas/User'
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/CommonResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/LoginData'
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Validation failed.
+        errors:
+          type: array
+          items:
+            type: string
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+    Document:
+      allOf:
+        - $ref: '#/components/schemas/AuditFields'
+        - type: object
+          required:
+            - title
+            - originalName
+            - status
+          properties:
+            title:
+              type: string
+              example: Employee Handbook
+            originalName:
+              type: string
+              example: Employee Handbook.pdf
+            storagePath:
+              type: string
+              example: uploads/documents/employee-handbook.pdf
+            mimeType:
+              type: string
+              example: application/pdf
+            extension:
+              type: string
+              example: pdf
+            size:
+              type: integer
+              example: 245876
+            checksum:
+              type: string
+              example: 8d8c5b97b2c39b6e7f5a6b8c1d9e0f1234567890abcdef
+            status:
+              type: string
+              enum:
+                - UPLOADED
+                - QUEUED
+                - PARSING
+                - CHUNKING
+                - EMBEDDING
+                - INDEXING
+                - READY
+                - FAILED
+                - DELETING
+                - DELETED
+              example: READY
+            uploadedBy:
+              type: string
+              format: uuid
+            retryCount:
+              type: integer
+              example: 0
+            failureReason:
+              type: string
+              nullable: true
+            processingStartedAt:
+              type: string
+              format: date-time
+              nullable: true
+            processingCompletedAt:
+              type: string
+              format: date-time
+              nullable: true
+            processingMetadata:
+              type: object
+              additionalProperties: true
+    DocumentChunk:
+      allOf:
+        - $ref: '#/components/schemas/AuditFields'
+        - type: object
+          properties:
+            documentId:
+              type: string
+              format: uuid
+            chunkIndex:
+              type: integer
+              example: 1
+            pageNumber:
+              type: integer
+              nullable: true
+            content:
+              type: string
+            tokenCount:
+              type: integer
+              example: 412
+            chunkHash:
+              type: string
+            embeddingModel:
+              type: string
+              example: text-embedding-3-small
+            pineconeId:
+              type: string
+            metadata:
+              type: object
+    AskQuestionRequest:
+      type: object
+      required:
+        - question
+      properties:
+        question:
+          type: string
+          example: Explain the employee leave policy.
+    Citation:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        chunkIndex:
+          type: integer
+        score:
+          type: number
+          format: float
+    AskQuestionData:
+      type: object
+      properties:
+        answer:
+          type: string
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+    AskQuestionResponse:
+      allOf:
+        - $ref: '#/components/schemas/CommonResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AskQuestionData'
+    QueryLog:
+      allOf:
+        - $ref: '#/components/schemas/AuditFields'
+        - type: object
+          properties:
+            question:
+              type: string
+            answer:
+              type: string
+            model:
+              type: string
+              example: gpt-4.1
+            promptTokens:
+              type: integer
+            completionTokens:
+              type: integer
+            totalTokens:
+              type: integer
+            responseTime:
+              type: integer
+              description: milliseconds
+            metadata:
+              type: object
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 145
+        pages:
+          type: integer
+          example: 15
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - UP
+            - DOWN
+    HealthData:
+      type: object
+      properties:
+        uptime:
+          type: number
+          example: 45321
+        timestamp:
+          type: string
+          format: date-time
+        database:
+          $ref: '#/components/schemas/HealthStatus'
+        redis:
+          $ref: '#/components/schemas/HealthStatus'
+        openai:
+          $ref: '#/components/schemas/HealthStatus'
+        pinecone:
+          $ref: '#/components/schemas/HealthStatus'
+        memory:
+          type: object
+          properties:
+            rss:
+              type: integer
+            heapUsed:
+              type: integer
+            heapTotal:
+              type: integer
+    HealthResponse:
+      allOf:
+        - $ref: '#/components/schemas/CommonResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/HealthData'
+  requestBodies:
+    Login:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoginRequest'
+    UploadDocument:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - file
+            properties:
+              file:
+                type: string
+                format: binary
+    AskQuestion:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AskQuestionRequest'
+  examples:
+    LoginSuccess:
+      summary: Login Successful
+      value:
+        success: true
+        message: Login successful.
+        data:
+          accessToken: jwt-token
+          user:
+            uuid: 9d6a8a77-fb2d-40d9-a6c7-90b0cb2bb4b1
+            firstName: System
+            lastName: Admin
+            email: admin@knowledgehub.ai
+    AskQuestion:
+      summary: AI Response
+      value:
+        success: true
+        message: Response generated successfully.
+        data:
+          answer: |
+            The leave policy allows employees to take 20 annual leave days.
+          citations:
+            - title: Employee Handbook
+              score: 0.96
+              chunkIndex: 5
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: Unauthorized.
+    ValidationError:
+      description: Validation Failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: Validation failed.
+            errors:
+              - Email is required.
+              - Password must be at least 8 characters.
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: Internal server error.
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: Permission denied.
+    NotFound:
+      description: Resource Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: Resource not found.
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: Resource already exists.
+  parameters:
+    UUID:
+      name: uuid
+      in: path
+      required: true
+      description: Resource UUID
+      schema:
+        type: string
+        format: uuid
+    Page:
+      name: page
+      in: query
+      required: false
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: Number of records per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    Search:
+      name: search
+      in: query
+      required: false
+      description: Search keyword
+      schema:
+        type: string

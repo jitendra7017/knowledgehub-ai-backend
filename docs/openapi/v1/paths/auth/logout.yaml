@@ -1,0 +1,35 @@
+post:
+  tags:
+    - Authentication
+
+  summary: Logout
+
+  description: Logout the current authenticated user.
+
+  operationId: logout
+
+  security:
+    - BearerAuth: []
+
+  responses:
+
+    "200":
+
+      description: Logout successful
+
+      content:
+
+        application/json:
+
+          schema:
+
+            $ref: "../../schemas/common.yaml#/CommonResponse"
+
+          example:
+
+            success: true
+            message: Logged out successfully.
+            data: null
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"

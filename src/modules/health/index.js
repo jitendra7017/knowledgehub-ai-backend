@@ -1,0 +1,2 @@
+export { default as healthRoutes }
+from "./routes/health.routes.js";

@@ -1,0 +1,117 @@
+Document:
+  allOf:
+    - $ref: "./common.yaml#/AuditFields"
+
+    - type: object
+
+      required:
+        - title
+        - originalName
+        - status
+
+      properties:
+
+        title:
+          type: string
+          example: Employee Handbook
+
+        originalName:
+          type: string
+          example: Employee Handbook.pdf
+
+        storagePath:
+          type: string
+          example: uploads/documents/employee-handbook.pdf
+
+        mimeType:
+          type: string
+          example: application/pdf
+
+        extension:
+          type: string
+          example: pdf
+
+        size:
+          type: integer
+          example: 245876
+
+        checksum:
+          type: string
+          example: 8d8c5b97b2c39b6e7f5a6b8c1d9e0f1234567890abcdef
+
+        status:
+          type: string
+          enum:
+            - UPLOADED
+            - QUEUED
+            - PARSING
+            - CHUNKING
+            - EMBEDDING
+            - INDEXING
+            - READY
+            - FAILED
+            - DELETING
+            - DELETED
+          example: READY
+
+        uploadedBy:
+          type: string
+          format: uuid
+
+        retryCount:
+          type: integer
+          example: 0
+
+        failureReason:
+          type: string
+          nullable: true
+
+        processingStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+        processingCompletedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+        processingMetadata:
+          type: object
+          additionalProperties: true
+
+DocumentCollection:
+  type: object
+
+  properties:
+
+    items:
+      type: array
+
+      items:
+        $ref: "#/Document"
+
+    pagination:
+      $ref: "./common.yaml#/Pagination"
+
+UploadDocumentResponse:
+  allOf:
+    - $ref: "./common.yaml#/CommonResponse"
+
+    - type: object
+
+      properties:
+
+        data:
+          $ref: "#/Document"
+
+DocumentResponse:
+  allOf:
+    - $ref: "./common.yaml#/CommonResponse"
+
+    - type: object
+
+      properties:
+
+        data:
+          $ref: "#/Document"

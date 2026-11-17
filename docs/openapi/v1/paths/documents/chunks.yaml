@@ -1,0 +1,47 @@
+get:
+  tags:
+    - Documents
+
+  summary: List Document Chunks
+
+  description: Returns all chunks generated for a document.
+
+  operationId: listDocumentChunks
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/UUID"
+
+  responses:
+
+    "200":
+
+      description: Chunks retrieved successfully.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            allOf:
+
+              - $ref: "../../schemas/common.yaml#/CommonResponse"
+
+              - type: object
+
+                properties:
+
+                  data:
+
+                    type: array
+
+                    items:
+
+                      $ref: "../../schemas/chunk.yaml#/DocumentChunk"
+
+    "404":
+      $ref: "../../components/responses.yaml#/NotFound"

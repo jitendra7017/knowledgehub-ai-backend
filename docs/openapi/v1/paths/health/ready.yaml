@@ -1,0 +1,38 @@
+get:
+  tags:
+    - Health
+
+  summary: Readiness Probe
+
+  description: |
+    Determines whether the application
+    is ready to receive traffic.
+
+    Checks:
+
+    - Database
+    - Redis
+    - OpenAI
+    - Pinecone
+
+  operationId: readiness
+
+  security: []
+
+  responses:
+
+    "200":
+
+      description: Application is ready.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            $ref: "../../schemas/health.yaml#/HealthResponse"
+
+    "503":
+
+      description: Service unavailable.

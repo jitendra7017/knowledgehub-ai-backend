@@ -1,0 +1,63 @@
+get:
+  tags:
+    - AI
+
+  summary: Suggested Questions
+
+  description: |
+    Returns AI-generated suggested questions
+    based on the uploaded documents.
+
+  operationId: suggestedQuestions
+
+  security:
+    - BearerAuth: []
+
+  responses:
+
+    "200":
+
+      description: Suggested questions.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            allOf:
+
+              - $ref: "../../schemas/common.yaml#/CommonResponse"
+
+              - type: object
+
+                properties:
+
+                  data:
+
+                    type: array
+
+                    items:
+
+                      type: string
+
+          example:
+
+            success: true
+
+            message: Success
+
+            data:
+
+              - Explain the leave policy.
+
+              - What are the reimbursement rules?
+
+              - Summarize the onboarding process.
+
+              - What are the working hours?
+
+              - What is the travel policy?
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"

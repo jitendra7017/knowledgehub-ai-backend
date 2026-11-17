@@ -1,0 +1,99 @@
+AskQuestionRequest:
+
+  type: object
+
+  required:
+    - question
+
+  properties:
+
+    question:
+      type: string
+      example: Explain the employee leave policy.
+
+Citation:
+
+  type: object
+
+  properties:
+
+    documentId:
+      type: string
+      format: uuid
+
+    title:
+      type: string
+
+    chunkIndex:
+      type: integer
+
+    score:
+      type: number
+      format: float
+
+AskQuestionData:
+
+  type: object
+
+  properties:
+
+    answer:
+      type: string
+
+    citations:
+
+      type: array
+
+      items:
+
+        $ref: "#/Citation"
+
+AskQuestionResponse:
+
+  allOf:
+
+    - $ref: "./common.yaml#/CommonResponse"
+
+    - type: object
+
+      properties:
+
+        data:
+
+          $ref: "#/AskQuestionData"
+
+QueryLog:
+
+  allOf:
+
+    - $ref: "./common.yaml#/AuditFields"
+
+    - type: object
+
+      properties:
+
+        question:
+          type: string
+
+        answer:
+          type: string
+
+        model:
+          type: string
+          example: gpt-4.1
+
+        promptTokens:
+          type: integer
+
+        completionTokens:
+          type: integer
+
+        totalTokens:
+          type: integer
+
+        responseTime:
+          type: integer
+          description: milliseconds
+
+        metadata:
+          type: object

@@ -1,0 +1,45 @@
+LoginSuccess:
+  summary: Login Successful
+
+  value:
+    success: true
+
+    message: Login successful.
+
+    data:
+      accessToken: jwt-token
+
+      user:
+        uuid: 9d6a8a77-fb2d-40d9-a6c7-90b0cb2bb4b1
+        firstName: System
+        lastName: Admin
+        email: admin@knowledgehub.ai
+
+DocumentUploaded:
+  summary: Upload Queued
+
+  value:
+    success: true
+
+    message: Document uploaded successfully.
+
+    data:
+      uuid: 4cfe1af7-1cbf-43c8-8b55-0a3d0d04d2be
+      status: QUEUED
+
+AskQuestion:
+  summary: AI Response
+
+  value:
+    success: true
+
+    message: Response generated successfully.
+
+    data:
+      answer: |
+        The leave policy allows employees to take 20 annual leave days.
+
+      citations:
+        - title: Employee Handbook
+          score: 0.96
+          chunkIndex: 5

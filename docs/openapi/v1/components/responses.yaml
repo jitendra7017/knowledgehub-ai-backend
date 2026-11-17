@@ -1,0 +1,74 @@
+Unauthorized:
+  description: Unauthorized
+
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/common.yaml#/ErrorResponse"
+
+      example:
+        success: false
+        message: Unauthorized.
+
+Forbidden:
+  description: Forbidden
+
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/common.yaml#/ErrorResponse"
+
+      example:
+        success: false
+        message: Permission denied.
+
+ValidationError:
+  description: Validation Failed
+
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/common.yaml#/ErrorResponse"
+
+      example:
+        success: false
+        message: Validation failed.
+        errors:
+          - Email is required.
+          - Password must be at least 8 characters.
+
+NotFound:
+  description: Resource Not Found
+
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/common.yaml#/ErrorResponse"
+
+      example:
+        success: false
+        message: Resource not found.
+
+Conflict:
+  description: Conflict
+
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/common.yaml#/ErrorResponse"
+
+      example:
+        success: false
+        message: Resource already exists.
+
+InternalServerError:
+  description: Internal Server Error
+
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/common.yaml#/ErrorResponse"
+
+      example:
+        success: false
+        message: Internal server error.

@@ -1,0 +1,118 @@
+get:
+  tags:
+    - Users
+
+  summary: List Users
+
+  description: |
+    Returns a paginated list of users.
+
+  operationId: listUsers
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - $ref: "../../components/parameters.yaml#/Page"
+    - $ref: "../../components/parameters.yaml#/Limit"
+    - $ref: "../../components/parameters.yaml#/Search"
+
+  responses:
+
+    "200":
+
+      description: Users retrieved successfully.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            allOf:
+
+              - $ref: "../../schemas/common.yaml#/CommonResponse"
+
+              - type: object
+
+                properties:
+
+                  data:
+
+                    type: object
+
+                    properties:
+
+                      items:
+
+                        type: array
+
+                        items:
+
+                          $ref: "../../schemas/user.yaml#/User"
+
+                      pagination:
+
+                        $ref: "../../schemas/common.yaml#/Pagination"
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"
+
+    "403":
+      $ref: "../../components/responses.yaml#/Forbidden"
+
+post:
+  tags:
+    - Users
+
+  summary: Create User
+
+  operationId: createUser
+
+  security:
+    - BearerAuth: []
+
+  requestBody:
+
+    required: true
+
+    content:
+
+      application/json:
+
+        schema:
+
+          type: object
+
+          required:
+
+            - firstName
+            - lastName
+            - email
+            - password
+
+          properties:
+
+            firstName:
+              type: string
+
+            lastName:
+              type: string
+
+            email:
+              type: string
+              format: email
+
+            password:
+              type: string
+              format: password
+
+  responses:
+
+    "201":
+
+      description: User created successfully.
+
+    "409":
+
+      $ref: "../../components/responses.yaml#/Conflict"

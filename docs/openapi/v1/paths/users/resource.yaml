@@ -1,0 +1,103 @@
+get:
+  tags:
+    - Users
+
+  summary: Get User
+
+  operationId: getUser
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/UUID"
+
+  responses:
+
+    "200":
+
+      description: User retrieved successfully.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            allOf:
+
+              - $ref: "../../schemas/common.yaml#/CommonResponse"
+
+              - type: object
+
+                properties:
+
+                  data:
+
+                    $ref: "../../schemas/user.yaml#/User"
+
+patch:
+  tags:
+    - Users
+
+  summary: Update User
+
+  operationId: updateUser
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/UUID"
+
+  requestBody:
+
+    required: true
+
+    content:
+
+      application/json:
+
+        schema:
+
+          type: object
+
+          properties:
+
+            firstName:
+              type: string
+
+            lastName:
+              type: string
+
+            isActive:
+              type: boolean
+
+  responses:
+
+    "200":
+
+      description: User updated successfully.
+
+delete:
+  tags:
+    - Users
+
+  summary: Delete User
+
+  operationId: deleteUser
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/UUID"
+
+  responses:
+
+    "204":
+
+      description: User deleted successfully.

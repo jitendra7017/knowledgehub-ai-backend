@@ -1,0 +1,41 @@
+DocumentChunk:
+
+  allOf:
+
+    - $ref: "./common.yaml#/AuditFields"
+
+    - type: object
+
+      properties:
+
+        documentId:
+          type: string
+          format: uuid
+
+        chunkIndex:
+          type: integer
+          example: 1
+
+        pageNumber:
+          type: integer
+          nullable: true
+
+        content:
+          type: string
+
+        tokenCount:
+          type: integer
+          example: 412
+
+        chunkHash:
+          type: string
+
+        embeddingModel:
+          type: string
+          example: text-embedding-3-small
+
+        pineconeId:
+          type: string
+
+        metadata:
+          type: object

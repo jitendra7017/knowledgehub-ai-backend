@@ -1,0 +1,32 @@
+UploadDocument:
+  required: true
+
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+
+        required:
+          - file
+
+        properties:
+
+          file:
+            type: string
+            format: binary
+
+Login:
+  required: true
+
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/auth.yaml#/LoginRequest"
+
+AskQuestion:
+  required: true
+
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/query.yaml#/AskQuestionRequest"

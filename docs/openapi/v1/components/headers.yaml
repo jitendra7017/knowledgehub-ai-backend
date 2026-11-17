@@ -1,0 +1,17 @@
+RequestId:
+  description: Unique request identifier.
+
+  schema:
+    type: string
+
+RateLimit:
+  description: Remaining API requests.
+
+  schema:
+    type: integer
+
+RateLimitReset:
+  description: Unix timestamp when the rate limit resets.
+
+  schema:
+    type: integer

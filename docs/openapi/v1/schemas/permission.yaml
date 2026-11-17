@@ -1,0 +1,24 @@
+Permission:
+
+  allOf:
+
+    - $ref: "./common.yaml#/AuditFields"
+
+    - type: object
+
+      properties:
+
+        module:
+          type: string
+          example: documents
+
+        action:
+          type: string
+          example: upload
+
+        code:
+          type: string
+          example: documents.upload
+
+        description:
+          type: string

@@ -1,0 +1,132 @@
+openapi: 3.1.0
+
+info:
+  title: KnowledgeHub AI API
+  version: 1.0.0
+  summary: Enterprise RAG Platform API
+
+  description: |
+    KnowledgeHub AI is an enterprise Retrieval-Augmented Generation (RAG)
+    platform that enables organizations to upload documents,
+    process them into vector embeddings, perform semantic search,
+    and interact with them using AI-powered conversations.
+
+    ## Features
+
+    - JWT Authentication
+    - Role Based Access Control (RBAC)
+    - Document Upload & Processing
+    - PDF Parsing
+    - Semantic Search
+    - OpenAI Integration
+    - Pinecone Vector Database
+    - Background Jobs (BullMQ)
+    - Audit Logs
+    - Health Monitoring
+
+  contact:
+    name: TechuLabs LLP
+    email: support@techulabs.com
+    url: https://techulabs.com
+
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local Development
+
+tags:
+  - name: Authentication
+    description: Authentication APIs
+
+  - name: Documents
+    description: Document Management APIs
+
+  - name: AI
+    description: AI & RAG APIs
+
+  - name: Health
+    description: Health Check APIs
+
+  - name: Users
+    description: User Management APIs
+
+paths:
+
+  # Authentication
+
+  /auth/login:
+    $ref: "./paths/auth/login.yaml"
+
+  /auth/refresh-token:
+    $ref: "./paths/auth/refresh-token.yaml"
+
+  /auth/logout:
+    $ref: "./paths/auth/logout.yaml"
+
+  /auth/me:
+    $ref: "./paths/auth/me.yaml"
+
+  # Documents
+
+  /documents:
+    $ref: "./paths/documents/collection.yaml"
+
+  /documents/upload:
+    $ref: "./paths/documents/upload.yaml"
+
+  /documents/{uuid}:
+    $ref: "./paths/documents/resource.yaml"
+
+  /documents/{uuid}/chunks:
+    $ref: "./paths/documents/chunks.yaml"
+
+  /documents/{uuid}/reindex:
+    $ref: "./paths/documents/reindex.yaml"
+
+  # AI
+
+  /ai/ask:
+    $ref: "./paths/ai/ask.yaml"
+
+  /ai/history:
+    $ref: "./paths/ai/history.yaml"
+
+  /ai/suggestions:
+    $ref: "./paths/ai/suggestions.yaml"
+
+  # Health
+
+  /health:
+    $ref: "./paths/health/health.yaml"
+
+  /health/live:
+    $ref: "./paths/health/live.yaml"
+
+  /health/ready:
+    $ref: "./paths/health/ready.yaml"
+
+  /health/details:
+    $ref: "./paths/health/details.yaml"
+
+  # Users
+
+  /users:
+    $ref: "./paths/users/collection.yaml"
+
+  /users/{uuid}:
+    $ref: "./paths/users/resource.yaml"
+
+components:
+
+  securitySchemes:
+
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer Authentication
+
+security:
+  - BearerAuth: []

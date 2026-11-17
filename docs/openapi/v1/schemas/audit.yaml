@@ -1,0 +1,38 @@
+AuditLog:
+
+  allOf:
+
+    - $ref: "./common.yaml#/AuditFields"
+
+    - type: object
+
+      properties:
+
+        userId:
+          type: string
+          format: uuid
+
+        action:
+          type: string
+          example: DOCUMENT_UPLOAD
+
+        module:
+          type: string
+          example: documents
+
+        entity:
+          type: string
+          example: Document
+
+        entityId:
+          type: string
+          format: uuid
+
+        ipAddress:
+          type: string
+
+        userAgent:
+          type: string
+
+        metadata:
+          type: object

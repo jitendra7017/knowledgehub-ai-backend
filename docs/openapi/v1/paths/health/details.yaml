@@ -1,0 +1,39 @@
+get:
+  tags:
+    - Health
+
+  summary: Detailed Health Report
+
+  description: |
+    Returns detailed runtime information.
+
+    Includes:
+
+    - Memory Usage
+    - Uptime
+    - Redis Status
+    - Database Status
+    - OpenAI Status
+    - Pinecone Status
+
+  operationId: healthDetails
+
+  security:
+    - BearerAuth: []
+
+  responses:
+
+    "200":
+
+      description: Detailed application health.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            $ref: "../../schemas/health.yaml#/HealthResponse"
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"

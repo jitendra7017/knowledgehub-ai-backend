@@ -1,0 +1,26 @@
+Role:
+
+  allOf:
+
+    - $ref: "./common.yaml#/AuditFields"
+
+    - type: object
+
+      properties:
+
+        name:
+          type: string
+
+        code:
+          type: string
+
+        description:
+          type: string
+
+        permissions:
+
+          type: array
+
+          items:
+
+            $ref: "./permission.yaml#/Permission"

@@ -1,0 +1,34 @@
+get:
+  tags:
+    - Health
+
+  summary: Liveness Probe
+
+  description: |
+    Used by Kubernetes or Docker
+    to determine whether the application
+    process is alive.
+
+  operationId: live
+
+  security: []
+
+  responses:
+
+    "200":
+
+      description: Application is alive.
+
+      content:
+
+        application/json:
+
+          example:
+
+            success: true
+
+            message: Application is alive.
+
+            data:
+
+              status: UP

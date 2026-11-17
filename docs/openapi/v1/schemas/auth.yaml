@@ -1,0 +1,63 @@
+LoginRequest:
+
+  type: object
+
+  required:
+    - email
+    - password
+
+  properties:
+
+    email:
+      type: string
+      format: email
+      example: admin@knowledgehub.ai
+
+    password:
+      type: string
+      format: password
+      example: Admin@123
+
+LoginData:
+
+  type: object
+
+  properties:
+
+    accessToken:
+      type: string
+
+    refreshToken:
+      type: string
+
+    expiresIn:
+      type: integer
+      example: 3600
+
+    user:
+      $ref: "./user.yaml#/User"
+
+LoginResponse:
+
+  allOf:
+
+    - $ref: "./common.yaml#/CommonResponse"
+
+    - type: object
+
+      properties:
+
+        data:
+          $ref: "#/LoginData"
+
+RefreshTokenRequest:
+
+  type: object
+
+  required:
+    - refreshToken
+
+  properties:
+
+    refreshToken:
+      type: string

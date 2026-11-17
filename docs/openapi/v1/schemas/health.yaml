@@ -1,0 +1,66 @@
+HealthStatus:
+
+  type: object
+
+  properties:
+
+    status:
+      type: string
+      enum:
+        - UP
+        - DOWN
+
+HealthData:
+
+  type: object
+
+  properties:
+
+    uptime:
+      type: number
+      example: 45321
+
+    timestamp:
+      type: string
+      format: date-time
+
+    database:
+      $ref: "#/HealthStatus"
+
+    redis:
+      $ref: "#/HealthStatus"
+
+    openai:
+      $ref: "#/HealthStatus"
+
+    pinecone:
+      $ref: "#/HealthStatus"
+
+    memory:
+
+      type: object
+
+      properties:
+
+        rss:
+          type: integer
+
+        heapUsed:
+          type: integer
+
+        heapTotal:
+          type: integer
+
+HealthResponse:
+
+  allOf:
+
+    - $ref: "./common.yaml#/CommonResponse"
+
+    - type: object
+
+      properties:
+
+        data:
+
+          $ref: "#/HealthData"

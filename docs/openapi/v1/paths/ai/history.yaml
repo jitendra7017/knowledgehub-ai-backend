@@ -1,0 +1,61 @@
+get:
+  tags:
+    - AI
+
+  summary: Conversation History
+
+  description: |
+    Returns previously asked questions and generated answers
+    for the authenticated user.
+
+  operationId: conversationHistory
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - $ref: "../../components/parameters.yaml#/Page"
+
+    - $ref: "../../components/parameters.yaml#/Limit"
+
+  responses:
+
+    "200":
+
+      description: Conversation history.
+
+      content:
+
+        application/json:
+
+          schema:
+
+            allOf:
+
+              - $ref: "../../schemas/common.yaml#/CommonResponse"
+
+              - type: object
+
+                properties:
+
+                  data:
+
+                    type: object
+
+                    properties:
+
+                      items:
+
+                        type: array
+
+                        items:
+
+                          $ref: "../../schemas/query.yaml#/QueryLog"
+
+                      pagination:
+
+                        $ref: "../../schemas/common.yaml#/Pagination"
+
+    "401":
+      $ref: "../../components/responses.yaml#/Unauthorized"
